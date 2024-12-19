@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import yargs from "https://cdn.deno.land/yargs/versions/yargs-v16.2.1-deno/raw/deno.ts";
+import yargs from "https://deno.land/x/yargs/deno.ts";
 import {
   buildPatch,
   buildRules,
@@ -7,8 +7,7 @@ import {
   getJson,
   ldAPIPatchRequest,
   ldAPIPostRequest,
-  rateLimitRequest,
-  delay
+  rateLimitRequest
 } from "./utils.ts";
 import * as Colors from "https://deno.land/std/fmt/colors.ts";
 
@@ -27,12 +26,12 @@ interface Arguments {
   domain: string;
 }
 
-let inputArgs: Arguments = yargs(Deno.args)
+const inputArgs: Arguments = yargs(Deno.args)
   .alias("p", "projKeySource")
   .alias("d", "projKeyDest")
   .alias("k", "apikey")
   .alias("u", "domain")
-  .default("u", "app.launchdarkly.com").argv;
+  .default("u", "app.launchdarkly.com").parse();
 
 // Project Data //
 const projectJson = await getJson(

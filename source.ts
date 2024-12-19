@@ -1,6 +1,5 @@
-import yargs from "https://cdn.deno.land/yargs/versions/yargs-v16.2.1-deno/raw/deno.ts";
+import yargs from "https://deno.land/x/yargs/deno.ts";
 import {
-  ensureDir,
   ensureDirSync,
 } from "https://deno.land/std@0.149.0/fs/mod.ts";
 import { consoleLogger, delay, ldAPIRequest, writeSourceData } from "./utils.ts";
@@ -11,11 +10,11 @@ interface Arguments {
   domain: string;
 }
 
-let inputArgs: Arguments = yargs(Deno.args)
+const inputArgs: Arguments = yargs(Deno.args)
   .alias("p", "projKey")
   .alias("k", "apikey")
   .alias("u", "domain")
-  .default("u", "app.launchdarkly.com").argv;
+  .default("u", "app.launchdarkly.com").parse();
 
 // ensure output directory exists
 const projPath = `./source/project/${inputArgs.projKey}`;
@@ -34,6 +33,10 @@ if (projResp == null) {
   Deno.exit(1);
 }
 const projData = await projResp.json();
+if(projData.code == "unauthorized") {
+  console.log(`Unauthorized for project ${inputArgs.projKey}`);
+  Deno.exit(1);
+}
 
 await writeSourceData(projPath, "project", projData);
 
